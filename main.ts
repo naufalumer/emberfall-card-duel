@@ -3,7 +3,7 @@
 // and writes the dossier there with the kit's buildDossier, byte for byte
 // what the gate rebuilds. Runs twice, writes the same bytes both times.
 
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -22,9 +22,29 @@ const CAPS = {
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)));
 const outDir = resolve(process.env.MAKEFUN_OUTPUT_DIR || '/output');
 
+// The grader may run this entry twice in the same /output, and cpSync
+// preserves the read-only modes of the repo checkout, so the previous
+// run's output is not writable: make it writable first, or the next
+// run's cleanup fails with EACCES on rmSync.
+function makeWritable(path: string): void {
+  const st = statSync(path);
+  if (st.isDirectory()) {
+    chmodSync(path, 0o755);
+    for (const entry of readdirSync(path)) makeWritable(join(path, entry));
+  } else {
+    chmodSync(path, 0o644);
+  }
+}
+
 function handIn(): void {
-  rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
+  // Never remove outDir itself: the grader runs as uid 65534 and /output is
+  // a root-owned mount, so deleting it is EACCES. Clear only its contents.
+  for (const entry of readdirSync(outDir)) {
+    const target = join(outDir, entry);
+    makeWritable(target);
+    rmSync(target, { recursive: true, force: true });
+  }
   for (const name of ['game', 'screenshots']) {
     const from = join(repoRoot, name);
     if (!existsSync(from)) throw new Error('missing ' + name + '/ in the repository');
