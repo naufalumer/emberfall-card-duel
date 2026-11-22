@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emberfall — a duel of ember cards</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Title screen -->
+  <section id="title-screen" class="screen">
+    <div class="title-inner">
+      <p class="eyebrow">A DUEL OF EMBER CARDS</p>
+      <h1>EMBERFALL</h1>
+      <p class="tagline">Outplay the Cinder Warden. Spend ember, ride the wheel,
+        and burn the other side&rsquo;s life to zero.</p>
+      <div id="title-preview" class="title-preview" aria-hidden="true"></div>
+      <button id="begin-btn" class="big-btn" type="button">Begin the duel</button>
+      <div class="howto">
+        <div><strong>Ember</strong> refills every turn. Cards cost ember to play.</div>
+        <div><strong>The wheel:</strong> Flame beats Gale, Gale beats Tide, Tide beats Flame. Stone is neutral. Beat the Warden&rsquo;s last card for +2.</div>
+        <div><strong>Surge:</strong> play two cards of one element in a turn and the second gains +2.</div>
+        <div><strong>Win:</strong> reduce the Warden to 0 life. Lose yours, and the table is theirs.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The table -->
+  <section id="table" class="screen hidden">
+    <div class="table-top">
+      <div class="side-panel" id="ai-panel"></div>
+      <div class="ai-hand-wrap">
+        <div class="hand-label">The Warden&rsquo;s hand</div>
+        <div id="ai-hand" class="mini-hand"></div>
+      </div>
+      <div class="turn-box">
+        <div id="turn-label" class="turn-label">Turn 1</div>
+        <button id="mute-btn" class="small-btn" type="button">Sound: on</button>
+      </div>
+    </div>
+
+    <div class="table-mid">
+      <div id="ai-last" class="last-slot"></div>
+      <div class="mid-col">
+        <div id="hint" class="hint"></div>
+        <div id="log" class="log" aria-live="polite"></div>
+      </div>
+      <div id="player-last" class="last-slot"></div>
+    </div>
+
+    <div class="table-bottom">
+      <div class="side-panel" id="player-panel"></div>
+      <div class="player-hand-wrap">
+        <div class="hand-label">Your hand — click a glowing card to play it</div>
+        <div id="player-hand" class="hand"></div>
+      </div>
+      <button id="end-turn" class="big-btn end-btn" type="button">End turn</button>
+    </div>
+  </section>
+
+  <!-- Win / loss screen -->
+  <section id="end-screen" class="screen overlay hidden">
+    <div class="end-inner">
+      <h2 id="end-title" class="end-title">VICTORY</h2>
+      <p id="end-text" class="end-text"></p>
+      <div id="end-stats" class="end-stats"></div>
+      <button id="again-btn" class="big-btn" type="button">Play again</button>
+    </div>
+  </section>
+
+</div>
+<script src="src/cards.js"></script>
+<script src="src/engine.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/render.js"></script>
+<script src="src/shots.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
